@@ -55,3 +55,4 @@ volumes:
 networks:
   ci-network:
     driver: bridge
+

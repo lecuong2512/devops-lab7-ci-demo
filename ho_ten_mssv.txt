@@ -1,0 +1,21 @@
+Họ và tên: Lê Việt Cường
+MSSV: DTC235200100
+Lớp: KTPM K22A
+Môn học: Vận hành và bảo trì phần mềm (DevOps)
+Bài thực hành: Lab 7 - Triển khai CI Pipeline với Jenkins, Nexus & SonarQube
+Repository GitHub: https://github.com/lecuong2512/devops-lab7-ci-demo
+
+Danh sách dịch vụ:
+- Jenkins: http://localhost:8080 (Admin: admin / admin123)
+- Nexus Repository OSS: http://localhost:8081 (Admin: admin / nexus123)
+- SonarQube Community Edition: http://localhost:9000 (Admin: admin / admin123)
+
+Kết quả thực hiện:
+1. Docker Stack: 3/3 container (lab7-jenkins, lab7-nexus, lab7-sonarqube) khởi chạy thành công.
+2. Sample Java App: Maven project với JUnit 5, test pass 6/6.
+3. Declarative Jenkinsfile: 6 stage chuẩn (Checkout -> Build -> Test -> SonarQube Analysis -> Package -> Publish to Nexus).
+4. Jenkins Pipeline Job: DevOps-Lab7-CI-Pipeline kết nối với repository GitHub và build thành công (Status: SUCCESS).
+5. Build & Test: Biên dịch Maven và chạy unit test pass 6/6 với JUnit surefire report.
+6. Package & Archive: Đóng gói thành công file ci-demo-1.0.0-SNAPSHOT.jar và lưu artifact trong Jenkins.
+7. Publish Nexus: Upload thành công artifact .jar và .pom lên repository maven-snapshots trên Nexus 3.
+8. SonarQube Code Analysis: Phân tích mã nguồn tĩnh, Quality Gate Passed (0 Bugs, 0 Vulnerabilities).

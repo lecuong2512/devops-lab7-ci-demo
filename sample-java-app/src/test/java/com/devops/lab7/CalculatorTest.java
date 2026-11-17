@@ -54,3 +54,4 @@ class CalculatorTest {
         assertFalse(calc.isPositive(0));
     }
 }
+

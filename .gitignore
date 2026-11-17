@@ -3,5 +3,3 @@ target/
 .idea/
 *.iml
 .vscode/
-screenshots/*.png
-!screenshots/.gitkeep
