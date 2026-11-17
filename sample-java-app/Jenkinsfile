@@ -147,7 +147,6 @@ pipeline {
         }
         always {
             echo "Build #${currentBuild.number} finished. Duration: ${currentBuild.duration}ms"
-            cleanWs()
         }
     }
 }
