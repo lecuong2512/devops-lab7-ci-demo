@@ -73,12 +73,8 @@ pipeline {
                                 sh 'mvn sonar:sonar -Dsonar.projectKey=devops-lab7 -Dsonar.projectName="DevOps Lab 7 CI Demo"'
                             }
                         } catch (Exception e) {
-                            echo "⚠️ SonarQube analysis via env failed or unconfigured, attempting direct scan: ${e.getMessage()}"
-                            try {
-                                sh "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.projectKey=devops-lab7 -Dsonar.projectName='DevOps Lab 7 CI Demo'"
-                            } catch (Exception ex) {
-                                echo "⚠️ SonarQube scan skipped: ${ex.getMessage()}"
-                            }
+                            echo "⚠️ SonarQube analysis via env note: ${e.getMessage()}"
+                            sh "mvn sonar:sonar -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.projectKey=devops-lab7 -Dsonar.projectName='DevOps Lab 7 CI Demo'"
                         }
                     }
                 }
@@ -105,37 +101,34 @@ pipeline {
                 script {
                     def targetDir = fileExists('sample-java-app/pom.xml') ? 'sample-java-app' : '.'
                     dir(targetDir) {
-                        try {
-                            sh '''
-                                mvn deploy:deploy-file \
-                                    -DgroupId=com.devops.lab7 \
-                                    -DartifactId=ci-demo \
-                                    -Dversion=1.0.0-SNAPSHOT \
-                                    -Dpackaging=jar \
-                                    -Dfile=target/ci-demo-1.0.0-SNAPSHOT.jar \
-                                    -Durl=http://lab7-nexus:8081/repository/maven-snapshots/ \
-                                    -DrepositoryId=nexus
-                            '''
-                        } catch (Exception e) {
-                            echo "⚠️ Nexus publish direct failed, attempting with credentials if present: ${e.getMessage()}"
-                            try {
-                                withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
-                                    configFileProvider([configFile(fileId: 'maven-settings-nexus', variable: 'MAVEN_SETTINGS')]) {
-                                        sh '''
-                                            mvn deploy:deploy-file \
-                                                -s "$MAVEN_SETTINGS" \
-                                                -DgroupId=com.devops.lab7 \
-                                                -DartifactId=ci-demo \
-                                                -Dversion=1.0.0-SNAPSHOT \
-                                                -Dpackaging=jar \
-                                                -Dfile=target/ci-demo-1.0.0-SNAPSHOT.jar \
-                                                -Durl=http://lab7-nexus:8081/repository/maven-snapshots/ \
-                                                -DrepositoryId=nexus
-                                        '''
-                                    }
-                                }
-                            } catch (Exception ex) {
-                                echo "⚠️ Nexus publish completed with message: ${ex.getMessage()}"
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'nexus-credentials',
+                                usernameVariable: 'NEXUS_USERNAME',
+                                passwordVariable: 'NEXUS_PASSWORD'
+                            )
+                        ]) {
+                            configFileProvider([
+                                configFile(
+                                    fileId: 'maven-settings-nexus',
+                                    variable: 'MAVEN_SETTINGS'
+                                )
+                            ]) {
+                                sh '''
+                                    echo "=== CHECK ARTIFACT ==="
+                                    ls -lh target/*.jar
+
+                                    echo "=== PUBLISH TO NEXUS ==="
+                                    mvn deploy:deploy-file \
+                                        -s "$MAVEN_SETTINGS" \
+                                        -DgroupId=com.devops.lab7 \
+                                        -DartifactId=ci-demo \
+                                        -Dversion=1.0.0-SNAPSHOT \
+                                        -Dpackaging=jar \
+                                        -Dfile=target/ci-demo-1.0.0-SNAPSHOT.jar \
+                                        -Durl=http://lab7-nexus:8081/repository/maven-snapshots/ \
+                                        -DrepositoryId=nexus
+                                '''
                             }
                         }
                     }
